@@ -2,15 +2,14 @@ package ahorcado;
   
 import static ahorcado.Estados.*;
 import ahorcado.Servidor.ServidorHilo;
-import java.net.*;
-import java.io.*;
+import ahorcadohibernate.Usuario; 
 import java.util.ArrayList;
 import java.util.Random;
  
 
 enum Estados
 {
-    INICIAL, LETRA, SALIR
+    INICIAL ,LOGEADO, JUEGO, SALIR
 }
 
 public class Protocolo {
@@ -39,26 +38,62 @@ public class Protocolo {
         
         
         if (estado == INICIAL) {
-            if(entradaProcesada[0].equals("J")){
+            if(entradaProcesada[0].equals("L")){ 
                 
-                Random r = new Random();
-                hilo.setPalabra(palabras[r.nextInt(palabras.length)]); 
+                if(Usuario.comprobarNombre(entradaProcesada[1])){
                 
-                salida = "Longitud:"+hilo.getPalabra().length();
+                    if(Usuario.comprobarContrasenia(entradaProcesada[1], entradaProcesada[2])){
+                    
+                        salida = "LC:"+entradaProcesada[1]+":"+Usuario.devolverRol(entradaProcesada[1]); 
+                        estado = LOGEADO;
+                    }else{
+                        salida = "LI:C";
+                        estado = INICIAL;
+                    }
+                }else{
+                        salida = "LI:U";
+                        estado = INICIAL;
+                }
+            }else if(entradaProcesada[0].equals("R")){  
                 
-                hilo.getLetrasUsadas().clear();
-                hilo.setNumAciertos(0);
-                hilo.setNumErrores(0);
-                estado = LETRA;
+                if(!Usuario.comprobarNombre(entradaProcesada[1])){
+                    salida = "RC:";
+                    Usuario.añadirUsuario(entradaProcesada[1], entradaProcesada[2]);
+                    estado = INICIAL;
+                     
+                }else{
+                    salida = "RI:";
+                    estado = INICIAL;
+                } 
             
-            }else if (entradaProcesada[0].equals("S")){ 
+            }else if(entradaProcesada[0].equals("S")){ 
                 salida = "S:";
                 hilo.setSeguir(false);
                 estado = SALIR;
+            
+            } 
+        
+        } else if(estado == LOGEADO) {
+    
+            if(entradaProcesada[0].equals("J")){
+
+                        Random r = new Random();
+                        hilo.setPalabra(palabras[r.nextInt(palabras.length)]); 
+
+                        salida = "Longitud:"+hilo.getPalabra().length();
+
+                        hilo.getLetrasUsadas().clear();
+                        hilo.setNumAciertos(0);
+                        hilo.setNumErrores(0);
+                        estado = JUEGO;
+
+            }else if(entradaProcesada[0].equals("S")){ 
+                salida = "S:"; 
+                estado = INICIAL;
+            
             }
         
-        }else if(estado == LETRA) {
-            
+        } else if(estado == Estados.JUEGO) {    
             if(entradaProcesada[0].equals("L")){ 
                 Character letra = entradaProcesada[1].charAt(0); 
                 char[] letras = hilo.getPalabra().toCharArray();  
@@ -79,9 +114,8 @@ public class Protocolo {
                             }
                         } 
                         if(hilo.getNumAciertos() >= hilo.getPalabra().length()){
-                            salida+="G:";
-                            salida+=hilo.getNumAciertos();
-                        
+                            salida="G:"+hilo.getNumAciertos(); 
+                            estado = LOGEADO;
                         }else{
                             salida+="LC:";
 
@@ -95,22 +129,21 @@ public class Protocolo {
                         hilo.setNumErrores(hilo.getNumErrores()+1); 
                         if(hilo.getNumErrores() >= Protocolo.erroresMaximos){
                             salida+="P:";
-                            estado = INICIAL;
+                            estado = LOGEADO;
                         }else{
                             salida+="LI:";
                             salida+=hilo.getNumErrores();
                         }
                     }
                 }else{
-                    salida="LU:";
-                    estado = LETRA;
+                    salida="LU:"; 
                 }
                 
                 
                 
             }else if (entradaProcesada[0].equals("S")){ 
                 salida = "S:";  
-                estado = INICIAL;
+                estado = LOGEADO;
             }
         } 
         

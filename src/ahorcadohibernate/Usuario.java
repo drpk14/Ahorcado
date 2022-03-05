@@ -113,7 +113,7 @@ public class Usuario  implements java.io.Serializable {
         return false;
     }
     
-    public static boolean comprobarContrasenia(String usuarioComprobar,String contraseñaComprobar){
+    public static boolean comprobarContrasenia(String usuarioComprobar,String contraseniaComprobar){
     
         Session session = HibernateUtil.getSessionFactory().openSession(); 
         Transaction tx = null;
@@ -128,9 +128,12 @@ public class Usuario  implements java.io.Serializable {
             List<Usuario> usuarios = query.list();
             
             Usuario usuario = usuarios.get(0); 
-            if(usuario.getNombre().equals(usuarioComprobar)){
-                    return true; 
-                
+            
+            System.out.println("nombre usuario:"+usuario.getNombre());
+            System.out.println("contraseña:" + usuario.getContrasenia());
+            
+            if(usuario.getContrasenia().equals(contraseniaComprobar)){
+                    return true;  
             } 
             tx.commit(); 
         }catch (HibernateException e) { 
@@ -143,7 +146,34 @@ public class Usuario  implements java.io.Serializable {
         return false;
     }
     
-    public void añadirUsuario(String nombre, String contrasenia){
+    public static String devolverRol(String usuarioComprobar){
+        String rol = null;
+        Session session = HibernateUtil.getSessionFactory().openSession(); 
+        Transaction tx = null;
+ 
+        try{
+            tx = session.beginTransaction(); 
+ 
+            Query query = session.createQuery("FROM Usuario WHERE nombre = :nombreParametro");
+            
+            query.setParameter("nombreParametro", usuarioComprobar);
+
+            List<Usuario> usuarios = query.list();
+            
+            Usuario usuario = usuarios.get(0); 
+            rol =  usuario.getRol();
+            tx.commit(); 
+        }catch (HibernateException e) { 
+            if (tx!=null) tx.rollback(); 
+            e.printStackTrace();
+        }finally {
+            session.close();
+        } 
+        
+        return rol;
+    }
+    
+    public static void añadirUsuario(String nombre, String contrasenia){
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = null;  
         try{
