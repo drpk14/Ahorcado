@@ -1,5 +1,6 @@
 package ahorcado;
   
+import ahorcadohibernate.Usuario;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -59,14 +60,13 @@ public class Cliente {
         
         
         
-        
-        String nombreUsuario = null;
-        
+         
         String entradaTeclado = "";
         String entradaServidor = "";
         String[] entradaServidorDividida;
         int numErrores = 0; 
         char palabra[] = new char[0];
+        Usuario usuario = null;
         try { 
             do {
                 System.out.println("1. Login");
@@ -89,129 +89,160 @@ public class Cliente {
                     System.out.println(entradaServidor);
                     
                     if(entradaServidorDividida[0].equals("LC")){
-                        //Logeo correcto
-                        nombreUsuario = entradaServidorDividida[1];
-                        System.out.println(nombreUsuario);
+                        //Logeo correcto  
                         System.out.println("Login correcto"); 
+                        usuario = Usuario.devolverUsuario(entradaServidorDividida[1]); 
                         
-                        if(entradaServidorDividida[2].equals("administrador")){
-                        
-                        
-                        
-                        }else{
-                        
-                            do {
-                                System.out.println("1. Jugar");
-                                System.out.println("2. Salir");
-                                System.out.println("");
+                        do {
+                            System.out.println("1. Jugar");
+                            
+                            if(usuario.getRol().equals("administrador")){
+                                System.out.println("2.Mostrar estadisticas de un usuario concreto");
+                            }else{
+                                System.out.println("2.Mostrar tus estadisticas");
+                            }
+                            
+                            System.out.println("3. Salir");
+                            System.out.println("");
 
-                                opcion = Integer.valueOf(teclado.readLine());
-
-
-                                if (opcion == 1) {   
-
-                                    out.println("J:");
-
-                                    entradaServidor = in.readLine();
-                                    entradaServidorDividida = entradaServidor.split(":");
-
-                                    if(entradaServidorDividida[0].equals("Longitud")){
-
-                                       palabra = new char[Integer.valueOf(entradaServidorDividida[1])];
-
-                                       for(int i = 0;i<palabra.length;i++){
-                                           palabra[i] = '_';
-                                       }
-
-                                       System.out.println("Bienvenido al juego, la palabra es la siguiente "+Cliente.dibujarPalabra(palabra));
-
-                                       do{
-                                           System.out.println("Introduce una letra o SALIR");
-
-                                           entradaTeclado = teclado.readLine();
-
-                                           char letraUsada = ' ';
-
-                                           if(entradaTeclado.equals("SALIR")){
-                                               out.println("S:");
-
-                                           }else{
-
-                                               letraUsada = entradaTeclado.charAt(0);
-
-                                               out.println("L:"+letraUsada);  
+                            opcion = Integer.valueOf(teclado.readLine());
 
 
-                                           } 
+                            if (opcion == 1) {   
+
+                                out.println("J:");
+
+                                entradaServidor = in.readLine();
+                                entradaServidorDividida = entradaServidor.split(":");
+
+                                if(entradaServidorDividida[0].equals("Longitud")){
+
+                                   palabra = new char[Integer.valueOf(entradaServidorDividida[1])];
+
+                                   for(int i = 0;i<palabra.length;i++){
+                                       palabra[i] = '_';
+                                   }
+
+                                   System.out.println("Bienvenido al juego, la palabra es la siguiente "+Cliente.dibujarPalabra(palabra));
+
+                                   do{
+                                       System.out.println("Introduce una letra o SALIR");
+
+                                       entradaTeclado = teclado.readLine();
+
+                                       char letraUsada = ' ';
+
+                                       if(entradaTeclado.equals("SALIR")){
+                                           out.println("S:");
+
+                                       }else{
+
+                                           letraUsada = entradaTeclado.charAt(0);
+
+                                           out.println("L:"+letraUsada);  
 
 
-                                           entradaServidor = in.readLine();
-                                           entradaServidorDividida = entradaServidor.split(":");
-                                           
-
-                                           if(entradaServidorDividida[0].equals("LC")){
-                                               System.out.println("La letra "+letraUsada+" aparece "+(entradaServidorDividida.length-1 )+ " veces");
-
-                                               for(int i = 1;i <entradaServidorDividida.length;i++){
-
-                                                   palabra[Integer.parseInt(entradaServidorDividida[i])] = letraUsada;
+                                       } 
 
 
-                                                   for(int j = 0;j<palabra.length;j++){
-                                                       if(i == Integer.parseInt(entradaServidorDividida[i])){ 
-                                                           palabra[i] = letraUsada;
-                                                       } 
+                                       entradaServidor = in.readLine();
+                                       entradaServidorDividida = entradaServidor.split(":");
 
-                                                   }
+
+                                       if(entradaServidorDividida[0].equals("LC")){
+                                           System.out.println("La letra "+letraUsada+" aparece "+(entradaServidorDividida.length-1 )+ " veces");
+
+                                           for(int i = 1;i <entradaServidorDividida.length;i++){
+
+                                               palabra[Integer.parseInt(entradaServidorDividida[i])] = letraUsada;
+
+
+                                               for(int j = 0;j<palabra.length;j++){
+                                                   if(i == Integer.parseInt(entradaServidorDividida[i])){ 
+                                                       palabra[i] = letraUsada;
+                                                   } 
 
                                                }
-                                               System.out.println(Cliente.dibujarPalabra(palabra));
+
+                                           }
+                                           System.out.println(Cliente.dibujarPalabra(palabra));
 
 
-                                           }else if(entradaServidorDividida[0].equals("LI")){
-                                               System.out.println("La letra "+letraUsada+" no aparece");
-                                               System.out.println(Cliente.dibujarErrores(Integer.valueOf(entradaServidorDividida[1])));
-                                               System.out.println(Cliente.dibujarPalabra(palabra));
+                                       }else if(entradaServidorDividida[0].equals("LI")){
+                                           System.out.println("La letra "+letraUsada+" no aparece");
+                                           System.out.println(Cliente.dibujarErrores(Integer.valueOf(entradaServidorDividida[1])));
+                                           System.out.println(Cliente.dibujarPalabra(palabra));
 
-                                           }else if(entradaServidorDividida[0].equals("LU")){
-                                               System.out.println("Esa letra ya ha sido usada"); 
-                                               System.out.println(Cliente.dibujarPalabra(palabra));
-                                           }else if(entradaServidorDividida[0].equals("G")){
-                                               System.out.println("Felicidadeees!!! Has ganado "+entradaServidorDividida[1]+" puntos");
-                                               break;
+                                       }else if(entradaServidorDividida[0].equals("LU")){
+                                           System.out.println("Esa letra ya ha sido usada"); 
+                                           System.out.println(Cliente.dibujarPalabra(palabra));
+                                       }else if(entradaServidorDividida[0].equals("G")){
+                                           System.out.println("Felicidadeees!!! Has ganado "+entradaServidorDividida[1]+" puntos");
+                                           break;
 
-                                           }else if(entradaServidorDividida[0].equals("P")){
-                                               System.out.println(Cliente.dibujarErrores(Integer.valueOf(entradaServidorDividida[1])));
-                                               System.out.println("Has perdido :( ");
-                                               break;
-                                           }else if(entradaServidorDividida[0].equals("S")){ 
+                                       }else if(entradaServidorDividida[0].equals("P")){
+                                           System.out.println(Cliente.dibujarErrores(Integer.valueOf(entradaServidorDividida[1])));
+                                           System.out.println("Has perdido :( ");
+                                           break;
+                                       }else if(entradaServidorDividida[0].equals("S")){ 
 
-                                               System.out.println("Saliendo de la partida");
-                                               break;
+                                           System.out.println("Saliendo de la partida");
+                                           break;
 
-                                           }  
-                                       }while(true);     
-                                   } 
+                                       }  
+                                   }while(true);     
+                               } 
 
-                               }else if(opcion == 2){
+                           }else if(opcion == 2 && usuario.getRol().equals("administrador")){
+                                System.out.println("Introduce el nombre del usuario que quieras buscar");
+                                String nombreBuscar = teclado.readLine();
+                                out.println("E:"+nombreBuscar);  
+                                
+                                entradaServidor = in.readLine();
+                                entradaServidorDividida = entradaServidor.split(":");
 
-                                   out.println("S:");  
+                                if(entradaServidorDividida[0].equals("E")){ 
+                                    System.out.println("------- ESTADISTICAS ----------");
+                                    System.out.println(" Nombre del usuario: "+entradaServidorDividida[1]);
+                                    System.out.println(" Partidas Jugadas:   "+entradaServidorDividida[2]);
+                                    System.out.println(" Partidas Ganadas:   "+entradaServidorDividida[3]);
+                                    System.out.println(" Tiempo de Juego:    "+entradaServidorDividida[4]);
+                                } 
 
-                                   entradaServidor = in.readLine();
-                                   entradaServidorDividida = entradaServidor.split(":");
+                            }else if(opcion == 2 && usuario.getRol().equals("usuario")){
 
-                                   if(entradaServidorDividida[0].equals("S")){
+                                out.println("E:"+usuario.getNombre());  
 
+                                entradaServidor = in.readLine();
+                                entradaServidorDividida = entradaServidor.split(":");
 
-                                       System.out.println("Hasta la proxima :)");
-                                       break;
-
-                                   } 
-
+                                if(entradaServidorDividida[0].equals("E")){ 
+                                    System.out.println("------- ESTADISTICAS ----------");
+                                    System.out.println(" Nombre del usuario: "+entradaServidorDividida[1]);
+                                    System.out.println(" Partidas Jugadas:   "+entradaServidorDividida[2]);
+                                    System.out.println(" Partidas Ganadas:   "+entradaServidorDividida[3]);
+                                    System.out.println(" Tiempo de Juego:    "+entradaServidorDividida[4]);
                                 }
-                            } while (true);
+
+                            }else if(opcion == 3){
+
+                               out.println("S:");  
+
+                               entradaServidor = in.readLine();
+                               entradaServidorDividida = entradaServidor.split(":");
+
+                               if(entradaServidorDividida[0].equals("S")){
+
+
+                                   System.out.println("Hasta la proxima :)");
+                                   break;
+
+                               } 
+
+                            }
+                        } while (true);
                             
-                        }
+                        
                     }else if (entradaServidorDividida[0].equals("LI")){
                         //Logeo incorrecto
                         String motivo = entradaServidorDividida[1];

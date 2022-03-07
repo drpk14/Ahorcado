@@ -69,7 +69,7 @@ public class Usuario  implements java.io.Serializable {
     public void setPartidasGanadas(Integer partidasGanadas) {
         this.partidasGanadas = partidasGanadas;
     }
-    public int getTiempoJugado() {
+    public Integer getTiempoJugado() {
         return this.tiempoJugado;
     }
     
@@ -146,8 +146,8 @@ public class Usuario  implements java.io.Serializable {
         return false;
     }
     
-    public static String devolverRol(String usuarioComprobar){
-        String rol = null;
+    public static Usuario devolverUsuario(String usuarioComprobar){
+        Usuario usuario = null;
         Session session = HibernateUtil.getSessionFactory().openSession(); 
         Transaction tx = null;
  
@@ -160,8 +160,7 @@ public class Usuario  implements java.io.Serializable {
 
             List<Usuario> usuarios = query.list();
             
-            Usuario usuario = usuarios.get(0); 
-            rol =  usuario.getRol();
+            usuario = usuarios.get(0); 
             tx.commit(); 
         }catch (HibernateException e) { 
             if (tx!=null) tx.rollback(); 
@@ -170,7 +169,7 @@ public class Usuario  implements java.io.Serializable {
             session.close();
         } 
         
-        return rol;
+        return usuario;
     }
     
     public static void añadirUsuario(String nombre, String contrasenia){
@@ -187,7 +186,7 @@ public class Usuario  implements java.io.Serializable {
             session.close();
         } 
 
-    }
+    } 
 }
 
 

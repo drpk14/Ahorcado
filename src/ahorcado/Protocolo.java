@@ -44,7 +44,7 @@ public class Protocolo {
                 
                     if(Usuario.comprobarContrasenia(entradaProcesada[1], entradaProcesada[2])){
                     
-                        salida = "LC:"+entradaProcesada[1]+":"+Usuario.devolverRol(entradaProcesada[1]); 
+                        salida = "LC:"+entradaProcesada[1];
                         estado = LOGEADO;
                     }else{
                         salida = "LI:C";
@@ -87,6 +87,13 @@ public class Protocolo {
                         hilo.setNumErrores(0);
                         estado = JUEGO;
 
+            }else if(entradaProcesada[0].equals("E")){ 
+                Usuario usuario = Usuario.devolverUsuario(entradaProcesada[1]);
+                
+                
+                salida = "E:"+usuario.getNombre()+":"+usuario.getPartidasGanadas()+":"+usuario.getPartidasJugadas()+":"+usuario.getTiempoJugado();
+                estado = INICIAL;
+            
             }else if(entradaProcesada[0].equals("S")){ 
                 salida = "S:"; 
                 estado = INICIAL;
